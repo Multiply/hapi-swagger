@@ -1,4 +1,4 @@
-# 7.9.0 Options Reference
+# 9.0.0 Options Reference
 
 ## Plugin Options
 
@@ -7,11 +7,9 @@ URLs and plugin
 * `host`: (string) The host (name or IP) serving the API including port if any i.e. `localhost:8080`
 * `auth`: (boolean, string or object) defines security strategy to use for plugin resources - default: `false`,
 * `cors`: (boolean) weather the swagger.json routes is servered with cors support - default: `false`,
-* `connectionLabel`: (string) A label used to document an API on a different HAPI server connection
-
 
 JSON (JSON endpoint needed to create UI)
-* `jsonPath`: (string) The path of JSON endpoint that describes the API - default: `/swagger.json`
+* `jsonPath`: (string) The path of JSON endpoint at describes the API - default: `/swagger.json`
 * `basePath`: (string) The base path from where the API starts i.e. `/v2/` (note, needs to start with `/`) -  default: `/`
 * `pathPrefixSize`: (number) Selects what segment of the URL path is used to group endpoints - default: `1`
 * `pathReplacements` : (array) methods for modifying path and group names in documentation - default: `[]`
@@ -35,6 +33,7 @@ JSON (JSON endpoint needed to create UI)
 *  `tagsGroupingFilter`: (function) A function used to determine which tags should be used for grouping (when `grouping` is set to `tags`) - default: `(tag) => tag !== 'api'`
 *  `securityDefinitions:`: (object) Containing [Security Definitions Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#securityDefinitionsObject). No defaults are provided.
 *  `payloadType`: (string) How payload parameters are displayed `json` or `form` - default: `json`
+* `documentationRouteTags`: (string or array) Add hapi tags to internal `hapi-swagger` routes - default: `[]`
 *  `consumes`: (array) The mimetypes consumed - default: `['application/json']`
 *  `produces`: (array) The mimetypes produced - default: `['application/json']`
 *  `xProperties`: Adds JOI data that cannot be use directly by swagger as metadata - default: `true`,
@@ -79,42 +78,34 @@ The plugin level options are added as you register the `hapi-swagger` plugin.
 
 ```Javascript
 const options = {
-        'info': {
-            'title': 'Test API Documentation',
-            'version': '5.14.3',
-            'contact': {
-                'name': 'Glenn Jones',
-                'email': 'glenn@example.com'
-        },
-        'schemes': ['https'],
-        'host': 'example.com'
-    };
+    'info': {
+        'title': 'Test API Documentation',
+        'version': '5.14.3',
+        'contact': {
+            'name': 'Glenn Jones',
+            'email': 'glenn@example.com'
+    },
+    'schemes': ['https'],
+    'host': 'example.com'
+};
 
-server.register([
-    require('inert'),
-    require('vision'),
+await server.register([
+    Inert,
+    Vision,
     {
-        require('hapi-swagger'),
+        plugin: HapiSwagger,
         options: options
-    }],
-    (err) => {
+    }
+]);
 
-        if (err) {
-            console.log(err);
-        }
-
-        server.route(Routes);
-
-        server.start((err) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log('Server running at:', server.info.uri);
-            }
-        });
-    });
+try {
+    await server.start( (err) => {
+    console.log('Server running at:', server.info.uri);
+} catch(err) {
+    console.log(err);
+}
+server.route(Routes);
 ```
-
 
 # Route options example
 The route level options are always placed within the `plugins.hapi-swagger` object under `config`. These options are
@@ -144,7 +135,3 @@ only assigned to the route they are apply to.
     }
 }
 ```
-
-
-
-
